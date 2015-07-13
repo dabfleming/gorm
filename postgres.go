@@ -59,6 +59,10 @@ func (postgres) SqlTag(value reflect.Value, size int, autoIncrease bool) string 
 	panic(fmt.Sprintf("invalid sql type %s (%s) for postgres", value.Type().Name(), value.Kind().String()))
 }
 
+func (postgres) Quote(key string) string {
+	return key
+}
+
 func (s postgres) ReturningStr(tableName, key string) string {
 	return fmt.Sprintf("RETURNING %v.%v", s.Quote(tableName), key)
 }
