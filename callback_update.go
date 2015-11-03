@@ -47,6 +47,12 @@ func Update(scope *Scope) {
 					sqls = append(sqls, fmt.Sprintf("%v = %v", scope.Quote(key), scope.AddToVars(value)))
 				}
 			}
+
+			// Update UpdatedAt if present
+			dbName := ToDBName("UpdatedAt")
+			if _, ok := scope.Fields()[dbName]; ok {
+				sqls = append(sqls, fmt.Sprintf("%v = %v", scope.Quote(dbName), scope.AddToVars(NowFunc())))
+			}
 		} else {
 			fields := scope.Fields()
 			for _, field := range fields {
