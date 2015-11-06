@@ -317,8 +317,8 @@ func (scope *Scope) GetModelStruct() *ModelStruct {
 							continue
 						} else {
 							if len(foreignKeys) == 0 {
-								for _, f := range scope.PrimaryFields() {
-									if foreignField := getForeignField(modelStruct.ModelType.Name()+f.Name, toScope.GetStructFields()); foreignField != nil {
+								for _, f := range toScope.PrimaryFields() {
+									if foreignField := getForeignField(field.Name+f.Name, fields); foreignField != nil {
 										relationship.AssociationForeignFieldNames = append(relationship.AssociationForeignFieldNames, f.Name)
 										relationship.AssociationForeignDBNames = append(relationship.AssociationForeignDBNames, f.DBName)
 										relationship.ForeignFieldNames = append(relationship.ForeignFieldNames, foreignField.Name)
@@ -328,9 +328,9 @@ func (scope *Scope) GetModelStruct() *ModelStruct {
 								}
 							} else {
 								for _, foreignKey := range foreignKeys {
-									if foreignField := getForeignField(foreignKey, toScope.GetStructFields()); foreignField != nil {
-										relationship.AssociationForeignFieldNames = append(relationship.AssociationForeignFieldNames, scope.PrimaryField().Name)
-										relationship.AssociationForeignDBNames = append(relationship.AssociationForeignDBNames, scope.PrimaryField().DBName)
+									if foreignField := getForeignField(foreignKey, fields); foreignField != nil {
+										relationship.AssociationForeignFieldNames = append(relationship.AssociationForeignFieldNames, toScope.PrimaryField().Name)
+										relationship.AssociationForeignDBNames = append(relationship.AssociationForeignDBNames, toScope.PrimaryField().DBName)
 										relationship.ForeignFieldNames = append(relationship.ForeignFieldNames, foreignField.Name)
 										relationship.ForeignDBNames = append(relationship.ForeignDBNames, foreignField.DBName)
 										foreignField.IsForeignKey = true
@@ -339,12 +339,12 @@ func (scope *Scope) GetModelStruct() *ModelStruct {
 							}
 
 							if len(relationship.ForeignFieldNames) != 0 {
-								relationship.Kind = "has_one"
+								relationship.Kind = "belongs_to"
 								field.Relationship = relationship
 							} else {
 								if len(foreignKeys) == 0 {
-									for _, f := range toScope.PrimaryFields() {
-										if foreignField := getForeignField(field.Name+f.Name, fields); foreignField != nil {
+									for _, f := range scope.PrimaryFields() {
+										if foreignField := getForeignField(modelStruct.ModelType.Name()+f.Name, toScope.GetStructFields()); foreignField != nil {
 											relationship.AssociationForeignFieldNames = append(relationship.AssociationForeignFieldNames, f.Name)
 											relationship.AssociationForeignDBNames = append(relationship.AssociationForeignDBNames, f.DBName)
 											relationship.ForeignFieldNames = append(relationship.ForeignFieldNames, foreignField.Name)
@@ -354,9 +354,9 @@ func (scope *Scope) GetModelStruct() *ModelStruct {
 									}
 								} else {
 									for _, foreignKey := range foreignKeys {
-										if foreignField := getForeignField(foreignKey, fields); foreignField != nil {
-											relationship.AssociationForeignFieldNames = append(relationship.AssociationForeignFieldNames, toScope.PrimaryField().Name)
-											relationship.AssociationForeignDBNames = append(relationship.AssociationForeignDBNames, toScope.PrimaryField().DBName)
+										if foreignField := getForeignField(foreignKey, toScope.GetStructFields()); foreignField != nil {
+											relationship.AssociationForeignFieldNames = append(relationship.AssociationForeignFieldNames, scope.PrimaryField().Name)
+											relationship.AssociationForeignDBNames = append(relationship.AssociationForeignDBNames, scope.PrimaryField().DBName)
 											relationship.ForeignFieldNames = append(relationship.ForeignFieldNames, foreignField.Name)
 											relationship.ForeignDBNames = append(relationship.ForeignDBNames, foreignField.DBName)
 											foreignField.IsForeignKey = true
@@ -365,7 +365,7 @@ func (scope *Scope) GetModelStruct() *ModelStruct {
 								}
 
 								if len(relationship.ForeignFieldNames) != 0 {
-									relationship.Kind = "belongs_to"
+									relationship.Kind = "has_one"
 									field.Relationship = relationship
 								}
 							}
